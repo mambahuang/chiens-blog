@@ -1,0 +1,300 @@
+"use client";
+
+import Sidebar from '../components/Sidebar';
+import PostCard from '../components/PostCard';
+import AboutView from '../components/AboutView';
+import ArchivesView from '../components/ArchivesView';
+import Pagination from '../components/Pagination';
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { useTheme } from 'next-themes';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Typewriter } from 'react-simple-typewriter';
+import { 
+  Github, Linkedin, Mail, Sun, Moon, Home, Layers, 
+  Archive, User, ChevronRight, ChevronLeft, Tag, Clock, ExternalLink,
+  BookOpen, Terminal, Code, Cpu, Award, X, Menu,
+  Briefcase, GraduationCap, ChevronUp, MapPin, Globe, 
+  FileText, Smartphone, Calendar, ChevronDown, Languages, ArrowLeft
+} from 'lucide-react';
+
+// --- 常數設定 ---
+const POSTS_PER_PAGE = 5;
+
+// --- 擴充測試數據 ---
+const POSTS = Array.from({ length: 12 }).map((_, i) => ({
+  id: i + 1,
+  title: `${[
+    "Optimizing AES-256 Hardware Logic",
+    "Next.js 14 Web Development Trends",
+    "Python for Large Scale Data Analysis",
+    "Embedded Systems and RTOS Guide",
+    "Modern UI/UX for Engineers",
+    "Post-Quantum Cryptography Basics"
+  ][i % 6]}`, // 已移除數字編號
+  excerpt: "In this article, we explore the deep integration of software and hardware to achieve maximum efficiency in modern computing environments...",
+  date: `2024-03-${20 - i}`,
+  tags: [["Security", "IC Design"], ["Frontend", "Next.js"], ["Python", "Data"], ["IoT", "Embedded"]][i % 4],
+  category: `Category ${(i % 3) + 1}`,
+  content: `這是文章的詳細內容模板。\n\n這裡可以放置很長很長的段落來測試閱讀體驗。對於工程師來說，清晰的排版與代碼區塊非常重要。接下來我們可以用 Markdown 渲染器來強化這一塊。`
+}));
+
+const technicalSkills = [
+  { name: "Verilog / SystemVerilog", icon: <Cpu size={18} /> },
+  { name: "Python (AI/ML/Data)", icon: <Terminal size={18} /> },
+  { name: "C / C++ (Firmware)", icon: <Code size={18} /> },
+  { name: "Embedded Linux", icon: <Smartphone size={18} /> }
+];
+
+// --- 1. 教育背景 (更新：包含碩士階段) ---
+const educationData = [
+  { 
+    school: "National Cheng Kung University (NCKU)", 
+    date: "2025.09 ~ 2027.06 (Pursuing)", 
+    title: "Master of CS & Information Engineering", 
+    desc: "From Digital IC Design Lab. Focus on hardware architectures." 
+  },
+  { 
+    school: "National Cheng Kung University (NCKU)", 
+    date: "2021.09 ~ 2025.06", 
+    title: "Bachelor of CS & Information Engineering", 
+    desc: "Focus on hardware security and circuit design." 
+  }
+];
+
+const languageData = [
+  { name: "English", cert: "TOEIC 825", icon: "🇬🇧" },
+  { name: "Japanese", cert: "JLPT N4", icon: "🇯🇵" }
+];
+
+// --- 2. 核心技術與軟實力 (更新：依照 CV 分類) ---
+const hardSkills = [
+  { name: "Verilog / SystemC", icon: <Cpu size={18} /> },
+  { name: "Python / C / C++", icon: <Terminal size={18} /> },
+  { name: "Digital IC Design", icon: <Code size={18} /> },
+  { name: "VLSI Testing / DSP", icon: <Layers size={18} /> }
+];
+
+const softSkills = [
+  { name: "Problem-Solving", icon: <Award size={18} /> },
+  { name: "Strong Communication", icon: <User size={18} /> },
+  { name: "Passion for Learning", icon: <BookOpen size={18} /> }
+];
+
+const keyCourses = [
+  "Digital IC Design", "VLSI Testing", "DSP", "Computer Architecture", "Cryptography"
+];
+
+// --- 3. 專案時間軸 (更新：整合 Work, Publication, Award) ---
+const experienceData = [
+  { 
+    date: "2025.01 ~ Current", 
+    title: "Digital IC Design Lab - Graduate RA", 
+    desc: "Working on Novatek project: Real-time flow estimation for video interpolation." 
+  },
+  { 
+    date: "2024.11", 
+    title: "IEEE APCCAS Publication (3rd Author)", 
+    desc: "Low Cost AES-256 Circuit Design. Achievement: 10.74% area improvement." 
+  },
+  { 
+    date: "2024.08", 
+    title: "Intelligent SoC Project Contest - Honorable Mention", 
+    desc: "Implementation of secure signature pad on PYNQ-Z2 FPGA." 
+  },
+  { 
+    date: "2024.03", 
+    title: "Interdisciplinary Talent Pitch - Gold Medal", 
+    desc: "Built hand skeleton recognition model using MLP + SVM on Jetson Nano." 
+  },
+  { 
+    date: "2023.11", 
+    title: "NCKU Cheng Kung Cup - 3rd Place", 
+    desc: "Case analysis and presentation on AI-driven employee engagement." 
+  }
+];
+
+export default function IntegratedApp() {
+  const [activeTab, setActiveTab] = useState('home');
+  const [readingPost, setReadingPost] = useState(null);
+  const [filterTag, setFilterTag] = useState(null);
+  const [filterCat, setFilterCat] = useState(null);
+  const [isCatOpen, setIsCatOpen] = useState(false); // 預設為收合
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showScroll, setShowScroll] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const handleScroll = () => {
+      // 僅在超過 300px 時更新 state，減少渲染次數
+      if (window.scrollY > 300 && !showScroll) setShowScroll(true);
+      if (window.scrollY <= 300 && showScroll) setShowScroll(false);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [showScroll]);
+
+  const filteredPosts = useMemo(() => {
+    return POSTS.filter(p => {
+      const matchTag = filterTag ? p.tags.includes(filterTag) : true;
+      const matchCat = filterCat ? p.category === filterCat : true;
+      return matchTag && matchCat;
+    });
+  }, [filterTag, filterCat]);
+
+  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
+  const currentPosts = filteredPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+
+  if (!mounted) return null;
+
+  const clearFilters = () => {
+    setFilterTag(null);
+    setFilterCat(null);
+    setCurrentPage(1);
+    setReadingPost(null);
+    setActiveTab('home');
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <div className={theme === 'dark' ? 'dark' : ''}>
+      <div className="min-h-screen bg-slate-50 dark:bg-[#050a10] text-slate-900 dark:text-slate-100 transition-colors duration-500">
+        
+        {/* --- 手機版頂部 --- */}
+        <header className="md:hidden sticky top-0 z-[60] bg-white/80 dark:bg-[#0d1520]/80 backdrop-blur-md border-b dark:border-slate-800 px-6 h-16 flex items-center justify-between">
+          <h1 className="font-black tracking-tighter uppercase text-blue-500">Charmander</h1>
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-slate-600 dark:text-white"><Menu size={24} /></button>
+        </header>
+
+        {/* --- 手機側邊欄 --- */}
+        <AnimatePresence>
+          {isSidebarOpen && (
+            <>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsSidebarOpen(false)} className="fixed inset-0 bg-black/60 z-[70] md:hidden" />
+              <motion.aside initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed left-0 top-0 h-full w-72 bg-white dark:bg-[#0d1520] z-[80] p-8 md:hidden shadow-2xl">
+                <button onClick={() => setIsSidebarOpen(false)} className="absolute top-4 right-4 p-2 text-slate-400"><X size={24}/></button>
+                <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} clearFilters={clearFilters} isCatOpen={isCatOpen} setIsCatOpen={setIsCatOpen} setFilterCat={setFilterCat} filterCat={filterCat} setReadingPost={setReadingPost} setCurrentPage={setCurrentPage} setIsSidebarOpen={setIsSidebarOpen} theme={theme} setTheme={setTheme} readingPost={readingPost} />
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* --- 佈局架構：Sidebar 靠左，內容區自動展開 --- */}
+        <div className="max-w-screen-2xl mx-auto flex flex-col md:grid md:grid-cols-[280px_1fr_300px] gap-0 md:gap-4 min-h-screen relative">
+          
+          {/* 1. Sidebar (貼左固定) */}
+          <aside className="hidden md:flex bg-white dark:bg-[#0d1520] border-r dark:border-slate-800 p-8 flex-col h-screen sticky top-0 z-50">
+            <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} clearFilters={clearFilters} isCatOpen={isCatOpen} setIsCatOpen={setIsCatOpen} setFilterCat={setFilterCat} filterCat={filterCat} setReadingPost={setReadingPost} setCurrentPage={setCurrentPage} setIsSidebarOpen={setIsSidebarOpen} theme={theme} setTheme={setTheme} readingPost={readingPost} />
+          </aside>
+
+          {/* 2. Main Content (中間拉寬) */}
+          <main className="p-6 md:p-12 min-h-screen">
+            <AnimatePresence mode="wait">
+              {readingPost ? (
+                <motion.article key="reading" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="max-w-3xl mx-auto">
+                  <button onClick={() => setReadingPost(null)} className="flex items-center gap-2 text-sm font-bold text-blue-500 mb-8 hover:-translate-x-2 transition-transform">
+                    <ArrowLeft size={16}/> Back to List
+                  </button>
+                  <header className="mb-12">
+                    <h2 className="text-4xl font-black mb-4 leading-tight">{readingPost.title}</h2>
+                    <div className="flex items-center gap-6 text-xs text-slate-400 font-bold uppercase tracking-widest">
+                       <span className="flex items-center gap-2"><Calendar size={14}/> {readingPost.date}</span>
+                       <span className="flex items-center gap-2 text-blue-500"><Layers size={14}/> {readingPost.category}</span>
+                    </div>
+                  </header>
+                  <div className="prose dark:prose-invert max-w-none space-y-6 text-slate-600 dark:text-slate-300 leading-relaxed text-lg whitespace-pre-wrap">
+                    {readingPost.content}
+                  </div>
+                </motion.article>
+              ) : (
+                <div className="w-full">
+                  {activeTab === 'home' && (
+                    <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                      <div className="md:hidden flex overflow-x-auto gap-2 pb-6 no-scrollbar">
+                        {["Security", "IC Design", "Frontend", "IoT", "Python", "Data"].map(tag => (
+                          <button key={tag} onClick={() => { setFilterTag(tag === filterTag ? null : tag); setCurrentPage(1); }} className={`whitespace-nowrap px-4 py-2 rounded-full text-xs font-black border transition-all ${filterTag === tag ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-[#0d1520] border-slate-200 dark:border-slate-800 text-slate-500'}`}>{tag}</button>
+                        ))}
+                      </div>
+
+                      <header className="mb-10 flex justify-between items-end border-b dark:border-slate-800 pb-6">
+                        <div>
+                          <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">
+                            {filterTag ? `Tag: ${filterTag}` : filterCat ? filterCat : "Latest Articles"}
+                          </h2>
+                          <div className="h-1 w-12 bg-blue-500 mt-2 rounded-full"></div>
+                        </div>
+                        {(filterTag || filterCat) && (
+                          <button onClick={clearFilters} className="text-xs font-bold text-blue-500 hover:underline flex items-center gap-1"><X size={14}/> Clear Filter</button>
+                        )}
+                      </header>
+
+                      <div className="space-y-8">
+                        {currentPosts.map(post => <PostCard key={post.id} post={post} onClick={() => { setReadingPost(post); scrollToTop(); }} />)}
+                      </div>
+                      <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} scrollToTop={scrollToTop} />
+                    </motion.div>
+                  )}
+
+                  {activeTab === 'archives' && <ArchivesView experienceData={experienceData} />}
+
+                  {activeTab === 'about' && (
+                    <AboutView 
+                      technicalSkills={technicalSkills} 
+                      languageData={languageData} 
+                      educationData={educationData}
+                      softSkills={softSkills}      // 👈 新增傳遞
+                      keyCourses={keyCourses}      // 👈 新增傳遞
+                    />
+                  )}
+                </div>
+              )}
+            </AnimatePresence>
+          </main>
+
+          {/* 3. 右側掛件 (Widget) */}
+          <aside className="hidden md:block p-8 border-l dark:border-slate-800 sticky top-0 h-screen overflow-y-auto no-scrollbar">
+            <div className="mb-12">
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-8 flex items-center gap-2"><Tag size={14} /> Tag Cloud</h4>
+              <div className="flex flex-wrap gap-2">
+                {["Security", "IC Design", "Frontend", "IoT", "Python", "Data", "Embedded"].map(tag => (
+                  <button key={tag} onClick={() => {setFilterTag(tag === filterTag ? null : tag); setFilterCat(null); setActiveTab('home'); setCurrentPage(1); setReadingPost(null); scrollToTop();}} className={`px-4 py-2 rounded-xl text-[10px] font-black border transition-all ${filterTag === tag ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-white dark:bg-[#0d1520] border-slate-200 dark:border-slate-800 hover:border-blue-400 text-slate-500 uppercase'}`}>#{tag}</button>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-8 bg-blue-600 rounded-[2.5rem] shadow-xl shadow-blue-500/20 text-white relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-700" />
+               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-4 opacity-70">Status</h4>
+               <p className="text-sm font-bold leading-relaxed">Currently exploring VLSI Design & Advanced Web Architectures.</p>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+
+      {/* --- 全域回到頂端按鈕 --- */}
+      <AnimatePresence>
+        {showScroll && (
+          <motion.button initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0 }} onClick={scrollToTop} className="fixed bottom-10 right-10 p-4 bg-blue-600 text-white rounded-full shadow-2xl z-[100] hover:bg-blue-700 transition-all ring-4 ring-white dark:ring-[#050a10]">
+            <ChevronUp size={24} />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      <style jsx global>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        html { scroll-behavior: smooth; }
+      `}</style>
+    </div>
+  );
+}

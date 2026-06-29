@@ -1,0 +1,13 @@
+{
+  "welcome": "你好，我是 黃芊",
+  "software_projects": "軟體專案",
+  "hardware_projects": "硬體專案",
+  "view_details": "查看詳情",
+  "projects": {
+    "smart-home": {
+      "title": "智能家居系統",
+      "desc": "基於 MQTT 的自動化控制...",
+      "content": "這裡是很長的詳細介紹，可以包含開發過程、使用的技術、遇到的挑戰等等。"
+    }
+  }
+}
