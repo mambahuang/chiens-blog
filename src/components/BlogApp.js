@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import {
   Layers, Tag, Calendar, ChevronUp, ChevronDown, X, Menu,
-  Terminal, Code, Cpu, Smartphone, ArrowLeft
+  Terminal, Code, Cpu, Smartphone, ArrowLeft, Home, ChevronRight
 } from 'lucide-react';
 
 // --- 常數設定 ---
@@ -129,11 +129,11 @@ export default function BlogApp({ posts = [] }) {
           )}
         </AnimatePresence>
 
-        {/* --- 佈局架構：Sidebar 靠左，內容區自動展開 --- */}
-        <div className="max-w-screen-2xl mx-auto flex flex-col md:grid md:grid-cols-[280px_1fr_300px] gap-0 md:gap-4 min-h-screen relative">
+        {/* --- 佈局架構：閱讀文章時收起左右側欄，內容區佔滿全寬 --- */}
+        <div className={`max-w-screen-2xl mx-auto flex flex-col gap-0 md:gap-4 min-h-screen relative ${readingPost ? 'md:block' : 'md:grid md:grid-cols-[280px_1fr_300px]'}`}>
 
-          {/* 1. Sidebar (貼左固定) */}
-          <aside className="hidden md:flex bg-white dark:bg-[#0d1520] border-r dark:border-slate-800 p-8 flex-col h-screen sticky top-0 z-50">
+          {/* 1. Sidebar (貼左固定，閱讀文章時隱藏) */}
+          <aside className={`md:flex bg-white dark:bg-[#0d1520] border-r dark:border-slate-800 p-8 flex-col h-screen sticky top-0 z-50 ${readingPost ? 'hidden md:hidden' : 'hidden md:flex'}`}>
             <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} clearFilters={clearFilters} isCatOpen={isCatOpen} setIsCatOpen={setIsCatOpen} setFilterCat={setFilterCat} filterCat={filterCat} setReadingPost={setReadingPost} setCurrentPage={setCurrentPage} setIsSidebarOpen={setIsSidebarOpen} theme={theme} setTheme={setTheme} readingPost={readingPost} />
           </aside>
 
@@ -141,7 +141,24 @@ export default function BlogApp({ posts = [] }) {
           <main className="p-6 md:p-12 min-h-screen">
             <AnimatePresence mode="wait">
               {readingPost ? (
-                <motion.article key="reading" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="max-w-3xl mx-auto">
+                <motion.article key="reading" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="max-w-4xl mx-auto">
+                  {/* 麵包屑路徑 */}
+                  <nav className="flex items-center flex-wrap gap-1.5 text-xs font-bold text-slate-400 mb-8" aria-label="Breadcrumb">
+                    <button onClick={clearFilters} className="flex items-center gap-1 hover:text-blue-500 transition-colors">
+                      <Home size={13} /> Home
+                    </button>
+                    {readingPost.category && (
+                      <>
+                        <ChevronRight size={13} className="text-slate-300 dark:text-slate-600" />
+                        <button onClick={() => { setFilterCat(readingPost.category); setFilterTag(null); setReadingPost(null); setActiveTab('home'); setCurrentPage(1); scrollToTop(); }} className="hover:text-blue-500 transition-colors">
+                          {readingPost.category}
+                        </button>
+                      </>
+                    )}
+                    <ChevronRight size={13} className="text-slate-300 dark:text-slate-600" />
+                    <span className="text-slate-600 dark:text-slate-300 truncate max-w-[200px] md:max-w-none">{readingPost.title}</span>
+                  </nav>
+
                   <button onClick={() => setReadingPost(null)} className="flex items-center gap-2 text-sm font-bold text-blue-500 mb-8 hover:-translate-x-2 transition-transform">
                     <ArrowLeft size={16}/> Back to List
                   </button>
@@ -152,7 +169,7 @@ export default function BlogApp({ posts = [] }) {
                        <span className="flex items-center gap-2 text-blue-500"><Layers size={14}/> {readingPost.category}</span>
                     </div>
                   </header>
-                  <div className="prose dark:prose-invert max-w-none prose-pre:bg-slate-900 prose-pre:text-slate-100 leading-relaxed">
+                  <div className="prose dark:prose-invert max-w-none prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:overflow-x-auto prose-code:break-words break-words leading-relaxed">
                     <ReactMarkdown>{readingPost.content}</ReactMarkdown>
                   </div>
                 </motion.article>
@@ -209,8 +226,8 @@ export default function BlogApp({ posts = [] }) {
             </AnimatePresence>
           </main>
 
-          {/* 3. 右側掛件 (Widget) */}
-          <aside className="hidden md:block p-8 border-l dark:border-slate-800 sticky top-0 h-screen overflow-y-auto no-scrollbar">
+          {/* 3. 右側掛件 (Widget，閱讀文章時隱藏) */}
+          <aside className={`p-8 border-l dark:border-slate-800 sticky top-0 h-screen overflow-y-auto no-scrollbar ${readingPost ? 'hidden' : 'hidden md:block'}`}>
             <div className="mb-12">
               <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-8 flex items-center gap-2"><Tag size={14} /> Filter by tag</h4>
               <div className="flex flex-wrap gap-2">
