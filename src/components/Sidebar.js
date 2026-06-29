@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Typewriter } from 'react-simple-typewriter';
 import { 
-  Home, Layers, Archive, User, ChevronRight, ChevronDown, 
+  Home, Layers, User, ChevronRight, ChevronDown,
   Github, Linkedin, Mail, Sun, Moon 
 } from 'lucide-react';
 
@@ -42,7 +42,7 @@ export default function Sidebar({
             <AnimatePresence initial={false}>
               {isCatOpen && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden ml-8 mt-1 space-y-1">
-                  {["Category 1", "Category 2", "Category 3"].map(cat => (
+                  {["Courses", "AI", "IC Design", "Japanese"].map(cat => (
                     <button 
                       key={cat} 
                       onClick={() => { setFilterCat(cat); setReadingPost(null); setActiveTab('home'); setCurrentPage(1); setIsSidebarOpen(false); }} 
@@ -56,10 +56,6 @@ export default function Sidebar({
             </AnimatePresence>
           </div>
 
-          <button onClick={() => { setActiveTab('archives'); setReadingPost(null); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'archives' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
-            <Archive size={18} /> Archives
-          </button>
-          
           <button onClick={() => { setActiveTab('about'); setReadingPost(null); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === 'about' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
             <User size={18} /> About
           </button>
@@ -68,8 +64,8 @@ export default function Sidebar({
 
       <div className="pt-8 border-t dark:border-slate-800 flex items-center justify-between mt-4">
         <div className="flex gap-4">
-          <a href="#" className="text-slate-400 hover:text-blue-500 transition-colors"><Github size={20}/></a>
-          <a href="#" className="text-slate-400 hover:text-blue-500 transition-colors"><Linkedin size={20}/></a>
+          <a href="https://github.com/mambahuang" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-blue-500 transition-colors"><Github size={20}/></a>
+          <a href="https://www.linkedin.com/in/chien-huang-56688b2b1/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-blue-500 transition-colors"><Linkedin size={20}/></a>
           <a href="mailto:mambahuang0824@gmail.com" className="text-slate-400 hover:text-blue-500 transition-colors"><Mail size={20}/></a>
         </div>
         <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-blue-500">
