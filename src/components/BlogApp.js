@@ -365,7 +365,7 @@ export default function BlogApp({ posts = [] }) {
                           ))
                         ) : (
                           <p className="text-text-muted text-sm">
-                            目前還沒有文章。在 content/posts/ 新增 .md 檔即可。
+                            目前還沒有文章。
                           </p>
                         )}
                       </div>
