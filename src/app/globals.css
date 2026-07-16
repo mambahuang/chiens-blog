@@ -2,26 +2,117 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Kinpaku (gold leaf) × lacquer palette, adapted from impeccable.style.
+ * Values are OKLCH components (L C H) without the oklch() wrapper so Tailwind
+ * can compose them with <alpha-value>. Light is the default; .dark overrides.
+ */
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  /* Paper white, not pure #fff -- the light-mode counterpart to avoiding pure
+     black: a warm off-white is easier on the eye than a blown-out canvas. */
+  --lacquer: 97% 0.012 95;
+  --lacquer-raised: 99% 0.008 95;
+  --lacquer-deep: 94% 0.014 95;
+  --kinpaku: 84% 0.19 80.46;
+  --kinpaku-deep: 61% 0.085 78;
+  --kinpaku-pale: 86% 0.07 84;
+  --patina: 50.5% 0.06 246.6;
+  --patina-deep: 50.5% 0.06 246.6;
+  --champagne: 18% 0.02 95;
+  --text-muted: 45% 0.015 95;
+  --text-faint: 55% 0.012 95;
+  --rule: 25% 0.02 95 / 0.12;
+  /* Accent used as TEXT in light (#486885 slate-blue; gold text fails on paper) */
+  --ink-accent: 50.5% 0.06 246.6;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.dark {
+  /* Canvas ~#121212, raised ~#181818, deep ~#0d0d0d. Pure-black (#000/#010101)
+     causes OLED smear on scroll and fatiguing contrast; these track the
+     Material Design / Uber dark-surface values instead. Depth is the tonal
+     step between them, no resting shadow. */
+  --lacquer: 18.2% 0.006 95;
+  --lacquer-raised: 20.9% 0.006 95;
+  --lacquer-deep: 15.9% 0.004 95;
+  /* Accents run at slightly lower chroma than light: saturated hues vibrate
+     against a dark canvas. Gold stays unmistakably gold (0.165, not 0.19). */
+  --kinpaku: 84% 0.165 80.46;
+  --kinpaku-deep: 61% 0.08 78;
+  --kinpaku-pale: 86% 0.06 84;
+  /* Prose links: a light slate-blue echoing the light-mode link hue (246.6),
+     lifted to L70% for 7:1 on the dark canvas. Replaces the bright teal. */
+  --patina: 70% 0.09 246.6;
+  --patina-deep: 70% 0.09 246.6;
+  /* Body text eased off pure white; 15:1 on lacquer reads harsh over long prose. */
+  --champagne: 87% 0 0;
+  --text-muted: 70% 0 0;
+  --text-faint: 60% 0 0;
+  --rule: 78% 0 0 / 0.16;
+  /* Accent used as TEXT: gold in dark (high contrast on lacquer) */
+  --ink-accent: 84% 0.165 80.46;
+}
+
+/*
+ * Klee One (kyokasho-tai) renders Japanese kana wherever it appears, including
+ * inline inside Chinese prose, without tagging the markup.
+ *
+ * Scoped to kana only -- NOT kanji. Klee One is a Japanese face whose kanji are
+ * JIS forms; letting it claim kanji would give Traditional Chinese text
+ * Japanese glyph shapes and drop characters it lacks (麼, 這, 灣...).
+ * Kana are unambiguously Japanese, so they are safe to claim globally.
+ */
+@font-face {
+  font-family: 'Klee Kana';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Klee One'),
+    url('https://fonts.gstatic.com/s/kleeone/v13/LDIxapCLNRc6A8oT4q4FUfemSYiv49tfllrv3pe-KYFKDXn9Sg.119.woff2')
+      format('woff2');
+  unicode-range: U+3041-3096, U+3099-309F, U+30A0-30FF, U+31F0-31FF,
+    U+FF66-FF9F;
+}
+
+@font-face {
+  font-family: 'Klee Kana';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Klee One SemiBold'),
+    url('https://fonts.gstatic.com/s/kleeone/v13/LDI2apCLNRc6A8oT4pbYF8OpG_bEg9BQg0jk5IC-EIRaB2yYJkvAGA.119.woff2')
+      format('woff2');
+  unicode-range: U+3041-3096, U+3099-309F, U+30A0-30FF, U+31F0-31FF,
+    U+FF66-FF9F;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: white;
+  color: oklch(var(--champagne));
+  background: oklch(var(--lacquer));
 }
 
-/* 讓捲軸漂亮一點 (選配) */
+/*
+ * An h1 immediately followed by an h2 (a section title with its first
+ * subsection, no intervening paragraph) reads as one group: collapse the gap
+ * so the pair binds, instead of the h2's default large margin-top winning.
+ * Doubled .prose to clear the prose-h2:mt-* utility's (0,2,0) specificity.
+ */
+.prose.prose h1 + h2 {
+  margin-top: 0.75rem;
+}
+
+/*
+ * Dark-mode image treatment: content images (post bodies) carry white or light
+ * backgrounds that float as bright blocks on the lacquer canvas. A hairline and
+ * a slight brightness pull-back seat them into the surface. Scoped to prose so
+ * the profile ring and UI marks (which already handle themselves) are untouched.
+ */
+.dark .prose img {
+  border: 1px solid oklch(var(--rule));
+  border-radius: 3px;
+  filter: brightness(0.92);
+}
+
+/* Scrollbar tuned to the kinpaku accent */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -29,9 +120,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
+  background: oklch(var(--kinpaku));
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: oklch(var(--kinpaku-deep));
 }
