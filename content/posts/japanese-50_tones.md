@@ -1,6 +1,6 @@
 ---
 title: "50 音整理"
-date: "2026-06-23"
+date: "2026-07-15"
 tags: ["Japanese", "self-learning"]
 category: "Japanese"
 excerpt: "學習日文從50音開始"
