@@ -13,7 +13,7 @@ export default function Sidebar({
       <div>
         <div className="flex flex-col items-center text-center mb-10">
           <div className="w-36 h-36 rounded-full border-4 border-kinpaku p-1 mb-4 shadow-xl overflow-hidden bg-lacquer-deep">
-            <img src="/images/profile.jpg" alt="Avatar" className="w-full h-full rounded-full object-cover" />
+            <img src="/images/cover_resized.jpg" alt="Avatar" className="w-full h-full rounded-full object-cover" />
           </div>
           <h1 className="font-display text-2xl font-bold text-champagne mb-2 tracking-tight uppercase">Chien's Blog </h1>
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-ink-accent px-2">
