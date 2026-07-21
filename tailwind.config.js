@@ -25,6 +25,10 @@ module.exports = {
         'text-muted': 'oklch(var(--text-muted) / <alpha-value>)',
         'text-faint': 'oklch(var(--text-faint) / <alpha-value>)',
         rule: 'oklch(var(--rule))',
+        'gold-ink': 'oklch(var(--gold-ink) / <alpha-value>)',
+        'vec-1': 'oklch(var(--vec-1) / <alpha-value>)',
+        'vec-3': 'oklch(var(--vec-3) / <alpha-value>)',
+        'vec-4': 'oklch(var(--vec-4) / <alpha-value>)',
       },
       fontFamily: {
         // Order matters. 'Klee Kana' is unicode-range-locked to kana, so it
@@ -44,6 +48,18 @@ module.exports = {
           'system-ui',
           'sans-serif',
         ],
+      },
+      fontSize: {
+        // `em`-based steps for the post figures: they resolve against the
+        // figure container's font-size, so one change to that container scales
+        // every label, cell and caption together. Tailwind's default sizes are
+        // `rem` and would ignore it.
+        'fig-3xs': ['0.625em', { lineHeight: '1.4' }],
+        'fig-2xs': ['0.7em', { lineHeight: '1.45' }],
+        'fig-xs': ['0.78em', { lineHeight: '1.5' }],
+        'fig-sm': ['0.88em', { lineHeight: '1.55' }],
+        'fig-base': ['1em', { lineHeight: '1.6' }],
+        'fig-lg': ['1.15em', { lineHeight: '1.4' }],
       },
       borderRadius: {
         // Near-square lacquer corners.

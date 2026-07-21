@@ -28,6 +28,19 @@ export function InfoBoxContent({ children }) {
   );
 }
 
+/**
+ * A side note: an aside that qualifies the surrounding prose without competing
+ * with it. Muted and a step smaller, on a faint tinted surface — no accent
+ * stripe, per the border-left rule in DESIGN.md.
+ */
+export function SideNote({ children }) {
+  return (
+    <div className="my-4 rounded-md border border-rule bg-lacquer-deep/40 px-4 py-3 text-sm leading-relaxed text-text-muted not-prose">
+      {children}
+    </div>
+  );
+}
+
 export function Timeline({ children }) {
   return (
     <div className="my-6 ml-4 border-l border-kinpaku-deep/30 dark:border-rule pl-6 not-prose">

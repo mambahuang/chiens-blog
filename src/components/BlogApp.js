@@ -16,12 +16,24 @@ import {
   InfoBox,
   InfoBoxTitle,
   InfoBoxContent,
+  SideNote,
   Timeline,
   TimelineItem,
   TimelineTitle,
   TimelineDate,
   TimelineContent,
 } from "./ProseBlocks";
+import {
+  TokenStrip,
+  InputParameterOutputFlow,
+  EmbeddingLookup,
+  AttentionMatrix,
+  AttentionFormula,
+  ContextShift,
+  ParallelCompare,
+  QKVFlow,
+  QKVProjection,
+} from "./AttentionBlocks";
 import {
   Layers,
   Calendar,
@@ -40,14 +52,24 @@ const POSTS_PER_PAGE = 5;
 
 // Maps the class names posts use in markdown to their rendering component.
 const PROSE_BLOCKS = {
-  'info-box': InfoBox,
-  'info-box-title': InfoBoxTitle,
-  'info-box-content': InfoBoxContent,
-  'custom-timeline': Timeline,
-  'custom-timeline-item': TimelineItem,
-  'timeline-title': TimelineTitle,
-  'timeline-date': TimelineDate,
-  'timeline-content': TimelineContent,
+  "info-box": InfoBox,
+  "info-box-title": InfoBoxTitle,
+  "info-box-content": InfoBoxContent,
+  "side-note": SideNote,
+  "custom-timeline": Timeline,
+  "custom-timeline-item": TimelineItem,
+  "timeline-title": TimelineTitle,
+  "timeline-date": TimelineDate,
+  "timeline-content": TimelineContent,
+  "io-training-flow": InputParameterOutputFlow,
+  "token-strip": TokenStrip,
+  "embedding-lookup": EmbeddingLookup,
+  "attention-formula": AttentionFormula,
+  "qkv-projection": QKVProjection,
+  "attention-matrix": AttentionMatrix,
+  "qkv-flow": QKVFlow,
+  "context-shift": ContextShift,
+  "parallel-compare": ParallelCompare,
 };
 
 export default function BlogApp({ posts = [] }) {
@@ -202,17 +224,23 @@ export default function BlogApp({ posts = [] }) {
 
         {/* --- 佈局架構：sidebar 改為抽屜；內容區 + 右側 tag 欄 --- */}
         <div
-          className={`max-w-screen-2xl mx-auto flex flex-col gap-0 md:gap-4 min-h-screen relative ${readingPost ? "md:block" : "md:grid md:grid-cols-[1fr_300px]"}`}
+          className={[
+            "max-w-screen-2xl mx-auto flex flex-col gap-0 md:gap-4 min-h-screen relative md:grid",
+            readingPost
+              ? "md:grid-cols-[minmax(0,1fr)]"
+              : "md:grid-cols-[minmax(0,1fr)_300px]",
+          ].join(" ")}
         >
           {/* Main Content (中間拉寬) */}
-          <main className="p-6 md:p-12 min-h-screen">
-            <AnimatePresence mode="wait">
+          <main className="min-w-0 p-6 md:p-12 min-h-screen">
+            <AnimatePresence>
               {readingPost ? (
                 <motion.article
                   key="reading"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
                   className="max-w-4xl mx-auto"
                 >
                   {/* 麵包屑路徑 */}
@@ -319,6 +347,8 @@ export default function BlogApp({ posts = [] }) {
                       key="home"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.18, ease: "easeOut" }}
                     >
                       <div className="md:hidden pb-6">
                         <TagFilter
@@ -386,7 +416,11 @@ export default function BlogApp({ posts = [] }) {
 
           {/* 右側 tag 欄 (閱讀文章時隱藏) */}
           <aside
-            className={`p-8 border-l border-rule sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto no-scrollbar ${readingPost ? "hidden" : "hidden md:block"}`}
+            className={[
+              "hidden p-8 border-l border-rule sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto no-scrollbar",
+              readingPost ? "md:hidden" : "md:block",
+            ].join(" ")}
+            aria-hidden={readingPost ? "true" : "false"}
           >
             <TagFilter
               allTags={allTags}
@@ -408,7 +442,7 @@ export default function BlogApp({ posts = [] }) {
             exit={{ opacity: 0, scale: 0 }}
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            className="fixed bottom-10 right-10 p-4 bg-kinpaku text-lacquer-deep rounded-md shadow-2xl z-[100] hover:bg-kinpaku-deep transition-colors"
+            className="fixed bottom-10 right-10 p-4 bg-kinpaku text-gold-ink rounded-md shadow-2xl z-[100] hover:bg-kinpaku-deep transition-colors"
           >
             <ChevronUp size={24} />
           </motion.button>

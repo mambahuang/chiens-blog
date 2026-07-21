@@ -28,7 +28,7 @@ export default function TagFilter({
               aria-pressed={isSelected}
               className={`px-4 py-2 rounded-md text-[10px] font-black uppercase border transition-all ${
                 isSelected
-                  ? "bg-kinpaku border-kinpaku text-lacquer-deep shadow-lg shadow-kinpaku/25"
+                  ? "bg-kinpaku border-kinpaku text-gold-ink shadow-lg shadow-kinpaku/25"
                   : "bg-lacquer-raised border-rule hover:border-kinpaku text-text-muted"
               }`}
             >
