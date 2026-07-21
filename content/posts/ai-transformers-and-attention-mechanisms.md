@@ -1,6 +1,6 @@
 ---
 title: "Transformer 與 Attention 機制：用視覺化方式看懂 token、QKV 與上下文"
-date: "2026-07-20"
+date: "2026-07-22"
 tags: ["AI", "Deep Learning"]
 category: "AI"
 excerpt: "從 tokenization、embedding、Q/K/V 到 multi-head attention，透過互動圖一步步看懂 Transformer 為什麼能靠上下文更新詞義，並在 GPU 上大規模訓練。"
